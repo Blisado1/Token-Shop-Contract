@@ -1,0 +1,55 @@
+{ parameter nat ;
+  storage (map nat (pair (nat %current_stock) (mutez %token_price))) ;
+  code { UNPAIR ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         GET ;
+         IF_NONE { PUSH string "Unknown kind of token" ; FAILWITH } {} ;
+         DUP ;
+         CDR ;
+         AMOUNT ;
+         COMPARE ;
+         NEQ ;
+         IF { PUSH string "Sorry, the token you are trying to purchase has a different price" ;
+              FAILWITH }
+            {} ;
+         PUSH nat 0 ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         CAR ;
+         COMPARE ;
+         EQ ;
+         IF { PUSH string "Sorry, the token you are trying to purchase is out of stock" ;
+              FAILWITH }
+            {} ;
+         DIG 2 ;
+         SWAP ;
+         DUP ;
+         DUG 2 ;
+         CDR ;
+         PUSH nat 1 ;
+         DIG 3 ;
+         CAR ;
+         SUB ;
+         ABS ;
+         PAIR ;
+         SOME ;
+         DIG 2 ;
+         UPDATE ;
+         PUSH address "tz1TGu6TN5GSez2ndXXeDX6LgUDvLzPLqgYV" ;
+         CONTRACT unit ;
+         IF_NONE { PUSH string "Not a contract" ; FAILWITH } {} ;
+         AMOUNT ;
+         UNIT ;
+         TRANSFER_TOKENS ;
+         SWAP ;
+         NIL operation ;
+         DIG 2 ;
+         CONS ;
+         PAIR } }
+
